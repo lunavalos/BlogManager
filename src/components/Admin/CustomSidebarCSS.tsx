@@ -56,6 +56,11 @@ const CustomSidebarCSS: React.FC = () => {
       .nav__group {
         margin-top: 25px !important;
       }
+
+      /* Hide default dashboard Collections and Globals grids */
+      .dashboard__group {
+        display: none !important;
+      }
     `}} />
   )
 }

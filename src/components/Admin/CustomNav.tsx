@@ -18,7 +18,7 @@ const CustomNav: React.FC = () => {
     {
       label: 'Perfil',
       href: '/admin/collections/users',
-      icon: 'M12 4.354a4 4 0 110 5.292M15Ay21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z'
+      icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'
     },
     {
       label: 'Media',
@@ -33,7 +33,7 @@ const CustomNav: React.FC = () => {
     {
       label: 'Posts',
       href: '/admin/collections/posts',
-      icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
+      icon: 'M3 19v-8.93a2 2 0 01.89-1.664l7-4.666a2 2 0 012.22 0l7 4.666A2 2 0 0121 10.07V19M3 19a2 2 0 002 2h14a2 2 0 002-2M3 19l6.75-4.5M21 19l-6.75-4.5M3 10l6.75 4.5M21 10l-6.75 4.5m0 0l-1.14.76a2 2 0 01-2.22 0l-1.14-.76'
     }
   ]
 
@@ -48,18 +48,12 @@ const CustomNav: React.FC = () => {
         color: 'rgba(255, 255, 255, 0.4)',
         fontWeight: 'bold'
       }}>
-        Colecciones
+        Gestión de Contenido
       </div>
       {navItems.map((item, i) => {
         const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`)
         // Special case for dashboard: only active on exact /admin
         const isDashboardActive = item.href === '/admin' ? pathname === '/admin' : isActive
-
-        let iconPath = item.icon
-        // New icon for Users/Profile: User icon
-        if (item.href.includes('/users')) {
-          iconPath = 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'
-        }
 
         return (
           <a
@@ -69,13 +63,28 @@ const CustomNav: React.FC = () => {
             style={{
               display: 'flex',
               alignItems: 'center',
-              padding: '10px 15px 10px 45px',
+              padding: '10px 15px',
               borderRadius: '8px',
               textDecoration: 'none',
               transition: 'all 0.2s ease',
+              marginBottom: '4px',
+              color: isDashboardActive ? '#fff' : 'rgba(255, 255, 255, 0.7)',
+              background: isDashboardActive ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
             }}
           >
-            {item.label}
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              style={{ width: '18px', height: '18px', marginRight: '12px' }} 
+              fill="none" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor" 
+              strokeWidth={2}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
+            </svg>
+            <span style={{ fontSize: '14px', fontWeight: isDashboardActive ? '600' : '500' }}>
+              {item.label}
+            </span>
           </a>
         )
       })}

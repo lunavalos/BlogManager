@@ -20,9 +20,6 @@ export const Authors: CollectionConfig = {
       type: 'relationship',
       relationTo: 'users',
       required: true,
-      admin: {
-        description: 'Usuario asociado a este autor.',
-      },
     },
     {
       name: 'bio',

@@ -13,39 +13,14 @@ export const Users: CollectionConfig = {
     }
   },
   labels: {
-    singular: 'Autor / Usuario / Perfil',
-    plural: 'Autores / Usuarios / Perfil',
+    singular: 'Usuario / Perfil',
+    plural: 'Usuarios / Perfil',
   },
-  hooks: {
-    afterChange: [
-      async ({ doc, req, operation }) => {
-        if (operation === 'create') {
-          try {
-            await req.payload.create({
-              collection: 'authors',
-              data: {
-                name: doc.username || doc.email,
-                user: doc.id,
-              },
-            })
-          } catch (e) {
-            console.error('Error creating author for user:', e)
-          }
-        }
-      },
-    ],
-  },
+  hooks: {},
   access: {
     admin: ({ req: { user } }) => !!user,
     create: ({ req: { user } }) => user?.roles?.includes('admin') ?? false,
-    read: ({ req: { user } }) => {
-      if (user?.roles?.includes('admin')) return true
-      return {
-        id: {
-          equals: user?.id,
-        },
-      }
-    },
+    read: () => true,
     update: ({ req: { user } }) => {
       if (user?.roles?.includes('admin')) return true
       return {

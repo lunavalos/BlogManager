@@ -1,5 +1,10 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import {
+  lexicalEditor,
+  HeadingFeature,
+  AlignFeature,
+  FixedToolbarFeature,
+} from '@payloadcms/richtext-lexical'
 import path from 'path'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
@@ -11,6 +16,8 @@ import { Media } from './collections/Media'
 import { Authors } from './collections/Authors'
 import { Categories } from './collections/Categories'
 import { Posts } from './collections/Posts'
+import { Pages } from './collections/Pages'
+import { SiteSettings, Navigation } from './globals'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -35,6 +42,11 @@ const storageAdapter = process.env.S3_BUCKET
 
 export default buildConfig({
   serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000',
+  localization: {
+    locales: ['es', 'en', 'fr', 'pt', 'zh'],
+    defaultLocale: 'es',
+    fallback: true,
+  },
   admin: {
     user: Users.slug,
     importMap: {
@@ -48,13 +60,23 @@ export default buildConfig({
       beforeNavLinks: [
         './components/Admin/CustomNav#default',
       ],
-      beforeDashboard: [
-        './components/Admin/DashboardSummary#default',
-      ],
+      views: {
+        Dashboard: {
+          Component: './components/Admin/CustomDashboard#default',
+        },
+      },
     },
   },
-  collections: [Users, Media, Authors, Categories, Posts],
-  editor: lexicalEditor(),
+  collections: [Users, Media, Authors, Categories, Posts, Pages],
+  globals: [SiteSettings, Navigation],
+  editor: lexicalEditor({
+    features: ({ defaultFeatures }) => [
+      ...defaultFeatures,
+      HeadingFeature({ enabledHeadingSizes: ['h2', 'h3', 'h4'] }),
+      AlignFeature(),
+      FixedToolbarFeature(),
+    ],
+  }),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
@@ -63,6 +85,7 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URL || '',
     },
+    push: false,
   }),
   sharp,
   plugins: [

@@ -42,11 +42,13 @@ export const Posts: CollectionConfig = {
               name: 'title',
               type: 'text',
               required: true,
+              localized: true,
             },
             {
               name: 'excerpt',
               type: 'textarea',
               maxLength: 300,
+              localized: true,
               admin: {
                 description: 'A brief summary of the post for listing pages.',
               },
@@ -55,6 +57,7 @@ export const Posts: CollectionConfig = {
               name: 'content',
               type: 'richText',
               required: true,
+              localized: true,
             },
           ],
         },
@@ -89,6 +92,7 @@ export const Posts: CollectionConfig = {
             {
               name: 'metaTitle',
               type: 'text',
+              localized: true,
               admin: {
                 description: 'SEO Title (ideal length: 50-60 characters)',
               },
@@ -96,6 +100,7 @@ export const Posts: CollectionConfig = {
             {
               name: 'metaDescription',
               type: 'textarea',
+              localized: true,
               admin: {
                 description: 'SEO Description (ideal length: 150-160 characters)',
               },
