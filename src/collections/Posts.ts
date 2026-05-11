@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import slugify from 'slugify'
+import { isAdminOrEditor } from '../access'
 
 export const Posts: CollectionConfig = {
   slug: 'posts',
@@ -30,6 +31,9 @@ export const Posts: CollectionConfig = {
         },
       }
     },
+    create: isAdminOrEditor,
+    update: isAdminOrEditor,
+    delete: isAdminOrEditor,
   },
   fields: [
     {

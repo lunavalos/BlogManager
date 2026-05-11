@@ -1,5 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
+import { isAdminOrEditor } from '../access'
+
 export const Pages: CollectionConfig = {
   slug: 'pages',
   admin: {
@@ -8,6 +10,9 @@ export const Pages: CollectionConfig = {
   },
   access: {
     read: () => true,
+    create: isAdminOrEditor,
+    update: isAdminOrEditor,
+    delete: isAdminOrEditor,
   },
   fields: [
     {
