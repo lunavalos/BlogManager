@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 import slugify from 'slugify'
 import { isAdminOrEditor } from '../access'
+import { sendNewsletter } from '../lib/resend'
 
 export const Posts: CollectionConfig = {
   slug: 'posts',
@@ -21,6 +22,81 @@ export const Posts: CollectionConfig = {
   },
   versions: {
     drafts: true,
+  },
+  hooks: {
+    afterChange: [
+      async ({ doc, operation, req }) => {
+        // Only trigger on publish events
+        const isPublished = doc._status === 'published'
+        const alreadySent = doc.newsletterSent === true
+
+        if (!isPublished || alreadySent) return
+
+        try {
+          // Resolve email image URL
+          let imageUrl: string | null = null
+          if (doc.emailImage) {
+            const mediaId =
+              typeof doc.emailImage === 'object' ? doc.emailImage.id : doc.emailImage
+            if (mediaId) {
+              const media = await req.payload.findByID({
+                collection: 'media',
+                id: mediaId,
+                req,
+              })
+              imageUrl = (media?.url as string) ?? null
+            }
+          }
+
+          // Serialize richText fields to plain HTML strings
+          // Payload's lexical editor stores JSON — we extract text paragraphs for email
+          const serializeRichTextToHtml = (richText: unknown): string | null => {
+            if (!richText || typeof richText !== 'object') return null
+            const root = (richText as { root?: { children?: unknown[] } }).root
+            if (!root?.children) return null
+            return root.children
+              .map((node: unknown) => {
+                const n = node as { type?: string; children?: { text?: string }[]; text?: string }
+                if (n.type === 'paragraph') {
+                  const text = (n.children ?? []).map((c) => c.text ?? '').join('')
+                  return text ? `<p>${text}</p>` : ''
+                }
+                return ''
+              })
+              .filter(Boolean)
+              .join('')
+          }
+
+          const sent = await sendNewsletter({
+            title: (doc.title as string) ?? 'Nueva publicación',
+            subtitle: (doc.subtitle as string | null) ?? null,
+            excerpt: (doc.excerpt as string | null) ?? null,
+            imageUrl,
+            relevantInfoHtml: serializeRichTextToHtml(doc.relevantInfo),
+            ctaSectionHtml: serializeRichTextToHtml(doc.ctaSection),
+            slug: (doc.slug as string) ?? '',
+          })
+
+          if (sent > 0) {
+            // Mark as sent so we never send this post's newsletter again
+            await req.payload.update({
+              collection: 'posts',
+              id: doc.id,
+              data: { newsletterSent: true },
+              req,
+            })
+            req.payload.logger.info(
+              `[Newsletter] Post "${doc.title}" enviado a ${sent} suscriptor(es).`,
+            )
+          }
+        } catch (err) {
+          // Log error but don't throw — we don't want to block the save
+          req.payload.logger.error(
+            `[Newsletter] Error al enviar el newsletter para el post "${doc.title}": ${err instanceof Error ? err.message : String(err)}`,
+          )
+        }
+      },
+    ],
   },
   access: {
     read: ({ req: { user } }) => {
