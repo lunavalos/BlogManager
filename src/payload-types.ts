@@ -246,8 +246,56 @@ export interface Post {
    * SEO Description (ideal length: 150-160 characters)
    */
   metaDescription?: string | null;
+  /**
+   * Subtítulo que aparecerá en el newsletter.
+   */
+  subtitle?: string | null;
+  /**
+   * Imagen destacada específica para el correo electrónico.
+   */
+  emailImage?: (number | null) | Media;
+  /**
+   * Bloque de información destacada para el newsletter.
+   */
+  relevantInfo?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Sección de llamado a la acción para el newsletter.
+   */
+  ctaSection?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   slug?: string | null;
   publishedDate?: string | null;
+  /**
+   * Indica si este post ya ha sido enviado como newsletter a través de Resend.
+   */
+  newsletterSent?: boolean | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -445,8 +493,13 @@ export interface PostsSelect<T extends boolean = true> {
   featuredImage?: T;
   metaTitle?: T;
   metaDescription?: T;
+  subtitle?: T;
+  emailImage?: T;
+  relevantInfo?: T;
+  ctaSection?: T;
   slug?: T;
   publishedDate?: T;
+  newsletterSent?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;

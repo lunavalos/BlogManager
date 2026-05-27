@@ -111,6 +111,46 @@ export const Posts: CollectionConfig = {
             },
           ],
         },
+        {
+          label: 'Newsletter',
+          fields: [
+            {
+              name: 'subtitle',
+              type: 'text',
+              localized: true,
+              admin: {
+                description: 'Subtítulo que aparecerá en el newsletter.',
+              },
+            },
+            {
+              name: 'emailImage',
+              label: 'Imagen para el email',
+              type: 'upload',
+              relationTo: 'media',
+              admin: {
+                description: 'Imagen destacada específica para el correo electrónico.',
+              },
+            },
+            {
+              name: 'relevantInfo',
+              label: 'Información Relevante',
+              type: 'richText',
+              localized: true,
+              admin: {
+                description: 'Bloque de información destacada para el newsletter.',
+              },
+            },
+            {
+              name: 'ctaSection',
+              label: 'Sección CTA',
+              type: 'richText',
+              localized: true,
+              admin: {
+                description: 'Sección de llamado a la acción para el newsletter.',
+              },
+            },
+          ],
+        },
       ],
     },
     {
@@ -138,6 +178,16 @@ export const Posts: CollectionConfig = {
       type: 'date',
       admin: {
         position: 'sidebar',
+      },
+    },
+    {
+      name: 'newsletterSent',
+      label: 'Newsletter Enviado',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        position: 'sidebar',
+        description: 'Indica si este post ya ha sido enviado como newsletter a través de Resend.',
       },
     },
   ],
